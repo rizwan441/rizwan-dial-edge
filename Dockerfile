@@ -10,6 +10,10 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# 🔥 ADD THIS LINE
+RUN npm install -g npm@latest
+
+
 # Copy source code
 COPY . .
 
