@@ -5,30 +5,59 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-test-scan:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
+      # Setup Node
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
 
+      # Install & Test
       - run: npm install
       - run: npm test
 
+      # -------------------------
+      # 1. BUILD DOCKER IMAGE (VERSIONED)
+      # -------------------------
       - name: Build Docker Image
-        run: docker build -t production-app .
+        run: |
+          docker build -t production-app:${{ github.sha }} .
 
+      # -------------------------
+      # 2. SECURITY SCAN (TRIVY)
+      # -------------------------
+      - name: Trivy Image Scan
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: production-app:${{ github.sha }}
+          format: table
+          exit-code: '1'
+          severity: CRITICAL,HIGH
+
+      # -------------------------
+      # 3. LOGIN TO DOCKER HUB
+      # -------------------------
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # -------------------------
+      # 4. TAG IMAGE FOR REGISTRY
+      # -------------------------
       - name: Tag Image
-        run: docker tag production-app ${{ secrets.DOCKER_USERNAME }}/production-app:latest
+        run: |
+          docker tag production-app:${{ github.sha }} \
+          ${{ secrets.DOCKER_USERNAME }}/production-app:${{ github.sha }}
 
+      # -------------------------
+      # 5. PUSH IMAGE
+      # -------------------------
       - name: Push Image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/production-app:latest
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/production-app:${{ github.sha }}
