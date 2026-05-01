@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: production-service
+  namespace: dev
 spec:
   type: NodePort
   selector:

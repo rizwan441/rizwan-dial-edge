@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: production-app
-  namespace: dev # Ensure this namespace exists on your VM (kubectl create namespace dev)
+  namespace: dev
 spec:
   replicas: 2
   selector:
@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: app
-          image: rizwan441/production-app:TMP_SHA_TAG # Placeholder
+          image: your-dockerhub/production-app:latest
           ports:
             - containerPort: 3000
