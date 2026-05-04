@@ -5,7 +5,7 @@ metadata:
   namespace: dev
 spec:
   rules:
-    - host: myapp.local   # domain (we'll map it)
+    - host: nextgenerationpetrolium.com  # domain (we'll map it)
       http:
         paths:
           - path: /
