@@ -3,9 +3,19 @@ kind: Ingress
 metadata:
   name: production-ingress
   namespace: dev
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
 spec:
+  ingressClassName: traefik
+
+  tls:
+    - hosts:
+        - nextgenerationpetrolium.com
+      secretName: app-tls
+
   rules:
-    - host: nextgenerationpetrolium.com  # domain (we'll map it)
+    - host: nextgenerationpetrolium.com
       http:
         paths:
           - path: /
