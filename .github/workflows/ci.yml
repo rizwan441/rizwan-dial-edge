@@ -51,6 +51,8 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl create namespace dev || true
+          kubectl apply -f k8s/cluster-issuer.yaml
+
 
           sed -i "s|image:.*|image: ${{ secrets.DOCKER_USERNAME }}/production-app:${{ github.sha }}|g" k8s/deployment.yaml
 
