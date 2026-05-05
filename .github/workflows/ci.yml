@@ -50,9 +50,6 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          # Create namespace if it doesn't exist
-          kubectl create namespace dev --dry-run=client -o yaml | kubectl apply -f -
-
           # Update image in deployment
           sed -i "s|image:.*|image: ${{ secrets.DOCKER_USERNAME }}/production-app:${{ github.sha }}|g" k8s/deployment.yaml
 
