@@ -50,14 +50,16 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl create namespace dev || true
-          kubectl apply -f k8s/cluster-issuer.yaml
+          # Create namespace if it doesn't exist
+          kubectl create namespace dev --dry-run=client -o yaml | kubectl apply -f -
 
-
+          # Update image in deployment
           sed -i "s|image:.*|image: ${{ secrets.DOCKER_USERNAME }}/production-app:${{ github.sha }}|g" k8s/deployment.yaml
 
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
-          kubectl apply -f k8s/ingress.yaml
+          # Apply all resources
+          kubectl apply -f k8s/deployment.yaml -n dev
+          kubectl apply -f k8s/service.yaml -n dev
+          kubectl apply -f k8s/ingress.yaml -n dev
 
+          # Wait for rollout
           kubectl rollout status deployment/production-app -n dev
