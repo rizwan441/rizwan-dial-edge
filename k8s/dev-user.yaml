@@ -1,0 +1,6 @@
+# dev-user.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dev-user
+  namespace: dev
